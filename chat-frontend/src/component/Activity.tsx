@@ -1,32 +1,66 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { socket } from "./io";
-
-const Activity = () => {
-
-	const [isConnected, setIsConnected] = useState(socket.connected);
-
-	useEffect(() => {
-		// socket.on('connect', () => {
-		// 	setIsConnected(true);
-		// 	socket.emit('userConnected', window.localStorage.getItem('user'))
-		// });
-
-		socket.on('disconnect', () => {
-			setIsConnected(false);
-		});
+// import { io } from "socket.io-client";
 
 
-		return () => {
-			socket.off('connect');
-			socket.off('disconnect');
-		};
-	}, []);
+interface User {
+	email: string;
+}
 
+interface UserBoxProps {
+	// user: User;
+	email: User['email'];
+}
 
+const UserBox = ({ email }: UserBoxProps) => {
+	// const UserBox = (user: any) => {
 	return (
 		<div>
-			<p>{isConnected && window.localStorage.getItem('user')}</p>
+			{email}
 		</div>
+	)
+}
+
+const Activity = () => {
+	const [activeUsers, setActiveUsers] = useState/* <User[]> */([])
+	const socketRef = useRef(socket);
+
+	useEffect(
+		() => {
+
+			console.log(activeUsers)
+			socketRef.current.emit('userConnected', () => {
+				return window.localStorage.getItem('user');
+			});
+
+
+			socketRef.current.on('clientHello', (data: any) => {
+				// if (data && !activeUsers.includes(data))
+				setActiveUsers(data);
+			})
+
+			// socketRef.current.on('connect', () => {
+			/** server sends data currently logged on*/
+			// })
+
+			return () => {
+				socket.off('clientHello');
+				socket.off('userConnected');
+			};
+		},
+		[activeUsers])
+
+	const hi = [{ email: 'hi' }, { email: 'hi2' }]
+
+	return (
+		<>
+			<div>{activeUsers}</div>
+			<div>
+				{/* {activeUsers.map((item) => <UserBox email={item.email} />)} */}
+			</div>
+			<div>
+				{hi.map((item) => <UserBox email={item.email} />)}
+			</div></>
 	);
 }
 

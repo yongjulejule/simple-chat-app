@@ -5,16 +5,13 @@ import Activity from "./component/Activity";
 
 // app
 const App = () => {
+	window.localStorage.debug = '*';
 	// Activity();
 	return (
 		<BrowserRouter>
 			<div>Hello world</div>
 			<Routes>
 				<Route path="/login" element={<Login />} />
-				{/* <Route path="/" element={<LoginPage />} /> */}
-				{/* <Route path="/" element={<LoginPage tab="home" />} />
-				<Route path="/login" element={<LoginPage tab="login" />} />
-				<Route path="/register" element={<LoginPage tab="register" />} /> */}
 			</Routes>
 			{
 				window.localStorage.getItem('user') && <Activity />
