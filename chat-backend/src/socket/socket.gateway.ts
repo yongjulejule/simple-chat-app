@@ -9,7 +9,10 @@ import { CreateSocketDto } from './dto/create-socket.dto';
 import { UpdateSocketDto } from './dto/update-socket.dto';
 import { ActiveUser } from './socket.interface';
 import { Server } from 'socket.io';
+import { UseInterceptors } from '@nestjs/common';
+import { PerformanceInterceptor } from 'src/performance/performance.interceptor';
 
+@UseInterceptors(PerformanceInterceptor)
 @WebSocketGateway({ namespace: '/activity', cors: { origin: '*' } })
 export class SocketGateway {
   constructor(private readonly socketService: SocketService) {
@@ -22,6 +25,7 @@ export class SocketGateway {
   handleConnection(client: any, ...args: any[]) {
     console.log('SocketGateway handleConnection');
     console.log('current Users: ', this.activeUsers);
+    this.server.emit('connected', 'connection');
     // this.server.emit('user connected', 'user connected')
   }
 
@@ -29,16 +33,17 @@ export class SocketGateway {
   newConnection(@MessageBody() data: ActiveUser) {
     console.log('SocketGateway newConnection', data);
     this.activeUsers.push(data);
+    this.server.emit('clientHello', this.activeUsers);
     console.log(this.activeUsers);
   }
 
-  @SubscribeMessage('userConnected')
-  create(@MessageBody() createSocketDto: CreateSocketDto) {
-    console.log('SocketGateway create, socket name: userConnected');
-    console.log('clientHello', this.activeUsers);
-    this.server.emit('clientHello', this.activeUsers);
-    return this.socketService.create(createSocketDto);
-  }
+  // @SubscribeMessage('userConnected')
+  // create(@MessageBody() createSocketDto: CreateSocketDto) {
+  //   console.log('SocketGateway create, socket name: userConnected');
+  //   console.log('clientHello', this.activeUsers);
+  //   this.server.emit('clientHello', this.activeUsers);
+  //   return this.socketService.create(createSocketDto);
+  // }
 
   @SubscribeMessage('ping')
   ping(@MessageBody() data: any) {

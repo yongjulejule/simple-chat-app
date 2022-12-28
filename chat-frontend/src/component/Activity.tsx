@@ -1,68 +1,52 @@
-import React, { useEffect, useRef, useState } from "react";
-import { socket } from "./io";
-// import { io } from "socket.io-client";
-
+import React, {useEffect, useRef, useState} from "react";
+import {socket} from "./io";
+import {nanoid} from "nanoid";
 
 interface User {
-	email: string;
+  email: string;
 }
 
 interface UserBoxProps {
-	// user: User;
-	email: User['email'];
+  email: User["email"];
 }
 
-const UserBox = ({ email }: UserBoxProps) => {
-	// const UserBox = (user: any) => {
-	return (
-		<div>
-			{email}
-		</div>
-	)
-}
+const UserBox = ({email}: UserBoxProps) => {
+  return <div>{email}</div>;
+};
 
 const Activity = () => {
-	const [activeUsers, setActiveUsers] = useState/* <User[]> */([])
-	const socketRef = useRef(socket);
+  const [activeUsers, setActiveUsers] = useState<User[]>([]);
+  const socketRef = useRef(socket);
 
-	useEffect(
-		() => {
+  useEffect(() => {
+    socketRef.current.on("connected", (data: any) => {
+      alert("connected");
+      const user: string | null = window.localStorage.getItem("user");
+      if (user) {
+        alert("user: " + user);
+        socketRef.current.emit("newConnection", user);
+      }
+    });
+    socketRef.current.on("clientHello", (data: any) => {
+      const userData: User[] = data.map((item: string): User => {
+        return {email: item};
+      });
+      setActiveUsers(userData);
+    });
+    return () => {
+      socket.off("connected");
+      socket.off("clientHello");
+      socket.off("userConnected");
+    };
+  }, []);
 
-			console.log(activeUsers)
-			socketRef.current.emit('userConnected', () => {
-				return window.localStorage.getItem('user');
-			});
-
-
-			socketRef.current.on('clientHello', (data: any) => {
-				// if (data && !activeUsers.includes(data))
-				setActiveUsers(data);
-			})
-
-			// socketRef.current.on('connect', () => {
-			/** server sends data currently logged on*/
-			// })
-
-			return () => {
-				socket.off('clientHello');
-				socket.off('userConnected');
-			};
-		},
-		[activeUsers])
-
-	const hi = [{ email: 'hi' }, { email: 'hi2' }]
-
-	return (
-		<>
-			<div>{activeUsers}</div>
-			<div>
-				{/* {activeUsers.map((item) => <UserBox email={item.email} />)} */}
-			</div>
-			<div>
-				{hi.map((item) => <UserBox email={item.email} />)}
-			</div></>
-	);
-}
-
+  return (
+    <div>
+      {activeUsers.map((item) => (
+        <UserBox key={nanoid()} email={item.email} />
+      ))}
+    </div>
+  );
+};
 
 export default Activity;
