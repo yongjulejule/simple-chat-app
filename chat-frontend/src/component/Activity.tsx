@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { socket } from "./io";
 
-
-function SocketHandler() {
+const Activity = () => {
 
 	const [isConnected, setIsConnected] = useState(socket.connected);
 
 	useEffect(() => {
-		socket.on('connect', () => {
-			setIsConnected(true);
-			socket.emit('userConnected', window.localStorage.getItem('user'))
-		});
+		// socket.on('connect', () => {
+		// 	setIsConnected(true);
+		// 	socket.emit('userConnected', window.localStorage.getItem('user'))
+		// });
 
 		socket.on('disconnect', () => {
 			setIsConnected(false);
@@ -32,4 +31,4 @@ function SocketHandler() {
 }
 
 
-export default SocketHandler;
+export default Activity;

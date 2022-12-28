@@ -2,14 +2,16 @@ import { WebSocketGateway, SubscribeMessage, MessageBody, WebSocketServer } from
 import { SocketService } from './socket.service';
 import { CreateSocketDto } from './dto/create-socket.dto';
 import { UpdateSocketDto } from './dto/update-socket.dto';
+import { ActiveUser } from './socket.interface';
 import { Server } from 'socket.io';
 
 @WebSocketGateway({ cors: { origin: '*' } })
 export class SocketGateway {
 	constructor(private readonly socketService: SocketService) {
 		console.log('SocketGateway constructor')
+		this.activeUsers = [];
 	}
-
+	private activeUsers: ActiveUser[]
 	@WebSocketServer()
 	server: Server;
 
@@ -17,6 +19,14 @@ export class SocketGateway {
 		console.log(args);
 		console.log('SocketGateway handleConnection')
 		// this.server.emit('user connected', 'user connected')
+	}
+
+	@SubscribeMessage('newConnection')
+	newConnection(@MessageBody() data: ActiveUser) {
+		console.log("SocketGateway newConnection", data)
+		this.activeUsers.push(data);
+		this.server.broadcast.emit('newConnection', data)
+		console.log(this.activeUsers)
 	}
 
 	@SubscribeMessage('userConnected')

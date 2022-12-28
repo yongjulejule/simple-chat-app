@@ -8,8 +8,7 @@ class Register extends React.Component {
 
 	render() {
 		return <>
-			<Login>
-			</Login>
+			<Login />
 			<button type="button"><a href='/register'>Register</a></button>
 		</>
 	}
