@@ -1,3 +1,3 @@
 export class CreateSocketDto {
-	user: string;
+  user: string;
 }

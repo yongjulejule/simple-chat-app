@@ -5,7 +5,6 @@ import {
   NestInterceptor,
 } from '@nestjs/common';
 import { map, Observable, tap } from 'rxjs';
-import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class LoggerInterceptor implements NestInterceptor {

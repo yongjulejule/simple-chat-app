@@ -1,29 +1,22 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Param,
-  Delete,
-  UseInterceptors,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { LoggerInterceptor } from './logger/logger.interceptor';
 import { ValidationPipe } from './validation/validation.pipe';
+import { ApiTags, ApiResponse } from '@nestjs/swagger';
 
+@ApiTags('user')
 @Controller('user')
-@UseInterceptors(LoggerInterceptor)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  // @UseInterceptors(LoggerInterceptor)
   @Post()
   async create(@Body(ValidationPipe) createUserDto: CreateUserDto) {
-    const SUCCESS = await this.userService.create(createUserDto);
-    return { success: SUCCESS, user: createUserDto.email };
+    return await this.userService.create(createUserDto);
   }
 
   @Get()
+  @ApiResponse({ status: 200, description: 'Success', type: CreateUserDto })
   findAll() {
     return this.userService.findAll();
   }

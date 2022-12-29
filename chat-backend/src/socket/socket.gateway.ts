@@ -4,15 +4,17 @@ import {
   MessageBody,
   WebSocketServer,
 } from '@nestjs/websockets';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { SocketService } from './socket.service';
 import { CreateSocketDto } from './dto/create-socket.dto';
 import { UpdateSocketDto } from './dto/update-socket.dto';
 import { ActiveUser } from './socket.interface';
 import { Server } from 'socket.io';
 import { UseInterceptors } from '@nestjs/common';
-import { PerformanceInterceptor } from 'src/performance/performance.interceptor';
+import { PerformanceInterceptor } from '../performance/performance.interceptor';
 
 @UseInterceptors(PerformanceInterceptor)
+@ApiTags('socket')
 @WebSocketGateway({ namespace: '/activity', cors: { origin: '*' } })
 export class SocketGateway {
   constructor(private readonly socketService: SocketService) {
@@ -22,6 +24,7 @@ export class SocketGateway {
   @WebSocketServer()
   server: Server;
 
+  @ApiOperation({ summary: 'Create a new socket' })
   handleConnection(client: any, ...args: any[]) {
     console.log('SocketGateway handleConnection');
     console.log('current Users: ', this.activeUsers);
