@@ -1,12 +1,14 @@
+import { Module } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { User } from './user/entities/user.entity';
-
+import { TypeOrmModule } from '@nestjs/typeorm';
 // this is trash but... can recycle it later
 
-export const QueryRunnerFactory = {
+const QueryRunnerFactory = {
   provide: 'QUERY_RUNNER',
   useFactory: (/* optionsProvider: OptionsProvider */) => {
     console.log('QUERY_RUNNER');
+
     return new DataSource({
       type: 'postgres',
       host: 'localhost',
@@ -18,5 +20,11 @@ export const QueryRunnerFactory = {
       synchronize: true,
     }).createQueryRunner();
   },
-  // inject: [optionsProvider],
 };
+
+@Module({
+  imports: [TypeOrmModule.forFeature([User])],
+  providers: [QueryRunnerFactory],
+  exports: [QueryRunnerFactory],
+})
+export class QueryRunnerModule {}

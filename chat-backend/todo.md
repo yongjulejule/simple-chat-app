@@ -1,4 +1,12 @@
 - interceptor 와 websocket 를 활용하여 유저 엑티비티 트래킹
-- interceptor pipe guard 
+- interceptor pipe guard
 - config DI
 - Seperate DB Module
+
+- config 사용하기
+- 로그인 시 access token 발급
+- 회원가입 구현
+- access token 유효성 검사
+- 토큰이 있으면 유저 정보를 보내줌
+- 토큰의 id 로 db에서 조회, 존재하면
+- interceptor 로 쿠키에 담아?

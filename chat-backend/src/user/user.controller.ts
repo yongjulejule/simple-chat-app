@@ -5,14 +5,14 @@ import { ValidationPipe } from './validation/validation.pipe';
 import { ApiTags, ApiResponse } from '@nestjs/swagger';
 
 @ApiTags('user')
-@Controller('user')
+@Controller('/api/user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   // @UseInterceptors(LoggerInterceptor)
   @Post()
   async create(@Body(ValidationPipe) createUserDto: CreateUserDto) {
-    return await this.userService.create(createUserDto);
+    return this.userService.create(createUserDto);
   }
 
   @Get()
