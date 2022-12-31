@@ -92,19 +92,24 @@ describe('UserModule (e2e)', () => {
   let token: string;
 
   it('/auth/login (POST)', async () => {
-    const req = await request(app.getHttpServer())
+    const res = await request(app.getHttpServer())
       .post('/auth/login')
       .send(mockUserDto)
       .expect(200);
-    token = req.headers['authorization'].split(' ')[1];
+    token = res.headers['authorization'].split(' ')[1];
   });
 
-  it('/api/user (GET)', () => {
-    return request(app.getHttpServer())
+  it('/api/user (GET)', async () => {
+    const res = await request(app.getHttpServer())
       .get('/api/user')
-      .set('Authorization', `Bearer ${token}`)
-      .expect(200)
-      .expect(mockUserEmailArray);
+      .set('cookie', `access_token=${token}`)
+      .send();
+    // .cookies('access_token', token)
+    // .cookies('access_token', token)
+    // .set('Authorization', `Bearer ${token}`)
+    // .expect(200)
+    // .expect(mockUserEmailArray);
+    console.log(res);
   });
   it('/api/user/:id (GET)', () => {
     return request(app.getHttpServer())

@@ -41,27 +41,27 @@ export class AuthController {
   ) /* : Promise<LoginUserDto> */ {
     const { access_token } = await this.authService.login(req.user);
     res.setHeader('Authorization', `Bearer ${access_token}`);
-    // res.cookie('access_token', access_token, {
-    //   sameSite: 'lax',
-    //   httpOnly: true,
-    // });
+    res.cookie('access_token', access_token, {
+      sameSite: 'lax',
+      httpOnly: true,
+    });
     // return req.user;
     return;
   }
 
   @UseGuards(JwtAuthGuard)
   @ApiBody({ type: LoginUserDto })
-  @ApiOkResponse({ description: 'Logout successful' })
+  @ApiOkResponse({ description: 'Logout success' })
   @Post('logout')
   @HttpCode(HttpStatus.OK)
   logout(@Res({ passthrough: true }) res: Response) {
     this.authService.logout();
-    return res.json({ message: 'Logout successful' }).end();
+    res.cookie('access_token', '', {
+      expires: new Date(0),
+      httpOnly: true,
+    });
+    return res.json({ message: 'Logout success' }).end();
     // console.log('logout', req.user);
     // return this.authService.logout();
-    // res.cookie('access_token', '', {
-    //   expires: new Date(0),
-    //   httpOnly: true,
-    // });
   }
 }

@@ -17,7 +17,10 @@ interface jwtResponse {
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private readonly configService: ConfigurationService) {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      // jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        (req) => req.cookies?.access_token,
+      ]),
       ignoreExpiration: false,
       secretOrKey: configService.authConfig.secret,
     });

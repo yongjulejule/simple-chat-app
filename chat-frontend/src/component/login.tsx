@@ -8,7 +8,7 @@ const Login = () => {
     const password = event.target.password.value;
     alert(email + " " + password);
 
-    fetch("http://localhost:4000/user", {
+    fetch("http://localhost:4000/auth/login", {
       method: "POST",
       headers: {"Content-Type": "application/json"},
       body: JSON.stringify({
