@@ -5,9 +5,8 @@ import * as request from 'supertest';
 import { User } from '../../src/user/entities/user.entity';
 import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
 import { CreateUserDto } from '../../src/user/dto/create-user.dto';
-import { AppModule } from '../../src/app.module';
 
-const userDtoArray: CreateUserDto[] = [
+const mockUserDtoArray: CreateUserDto[] = [
   {
     email: 'email_1@example.com',
     password: 'password_1',
@@ -18,9 +17,9 @@ const userDtoArray: CreateUserDto[] = [
   },
 ];
 
-const emailArray = userDtoArray.map((userDto) => userDto.email);
+const mockUserEmailArray = mockUserDtoArray.map((userDto) => userDto.email);
 
-const userDto: CreateUserDto = {
+const mockUserDto: CreateUserDto = {
   email: 'email_3@example.com',
   password: 'password_3',
 };
@@ -28,6 +27,16 @@ const userDto: CreateUserDto = {
 describe('UserModule (e2e)', () => {
   let app: INestApplication;
 
+  // Mocking Database
+  const mockUserRepository = getRepositoryToken(User);
+  const mockUserRepositoryValue = {
+    findAll: jest.fn().mockResolvedValue(mockUserEmailArray),
+    findOneBy: jest.fn().mockResolvedValue(mockUserDto),
+    findOne: jest.fn().mockResolvedValue(mockUserDto),
+    find: jest.fn().mockResolvedValue(mockUserEmailArray),
+    save: jest.fn().mockResolvedValue(mockUserDto),
+    delete: jest.fn().mockResolvedValue({ affected: 1 }),
+  };
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [
@@ -36,35 +45,47 @@ describe('UserModule (e2e)', () => {
           type: 'postgres',
           host: 'localhost',
           port: 5432,
-          // username: 'yongjule' ,
-          // password: 'yongjule' ,
-          // database: 'yongjule' ,
+          username: 'test',
+          password: 'test',
+          database: 'test',
           entities: [User],
           synchronize: true,
         }),
       ],
-      providers: [
-        {
-          provide: getRepositoryToken(User),
-          useValue: {
-            findAll: jest.fn().mockResolvedValue(userDtoArray),
-            findOneBy: jest.fn().mockResolvedValue(userDto),
-            findOne: jest.fn().mockResolvedValue(userDto),
-            find: jest.fn().mockResolvedValue(emailArray),
-            save: jest.fn().mockResolvedValue(userDto),
-            delete: jest.fn().mockResolvedValue({ affected: 1 }),
-          },
-        },
-      ],
-    }).compile();
+    })
+      .overrideProvider(mockUserRepository)
+      .useValue(mockUserRepositoryValue)
+      .compile();
 
     app = moduleFixture.createNestApplication();
     await app.init();
+  });
+  afterAll(async () => {
+    await app.close();
   });
   it('/api/user (GET)', () => {
     return request(app.getHttpServer())
       .get('/api/user')
       .expect(200)
-      .expect(userDtoArray);
+      .expect(mockUserEmailArray);
+  });
+  it('/api/user (POST)', () => {
+    return request(app.getHttpServer())
+      .post('/api/user')
+      .send(mockUserDto)
+      .expect(201)
+      .expect(mockUserDto);
+  });
+  it('/api/user/:id (GET)', () => {
+    return request(app.getHttpServer())
+      .get('/api/user/1')
+      .expect(200)
+      .expect(mockUserDto);
+  });
+  it('/api/user/:id (DELETE)', () => {
+    return request(app.getHttpServer())
+      .delete('/api/user/1')
+      .expect(200)
+      .expect({ affected: 1 });
   });
 });

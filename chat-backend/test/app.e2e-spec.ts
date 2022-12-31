@@ -15,19 +15,6 @@ describe('AppController (e2e)', () => {
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      providers: [
-        {
-          provide: getRepositoryToken(User),
-          useValue: {
-            findAll: jest.fn().mockResolvedValue(mockUser),
-            findOneBy: jest.fn().mockResolvedValue(mockUser),
-            findOne: jest.fn().mockResolvedValue(mockUser),
-            find: jest.fn().mockResolvedValue(mockUser),
-            save: jest.fn().mockResolvedValue(mockUser),
-            delete: jest.fn().mockResolvedValue({ affected: 1 }),
-          },
-        },
-      ],
       imports: [AppModule],
     }).compile();
 
