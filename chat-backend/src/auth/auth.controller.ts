@@ -2,6 +2,8 @@ import {
   Body,
   Controller,
   Header,
+  HttpCode,
+  HttpStatus,
   Post,
   Req,
   Res,
@@ -50,12 +52,15 @@ export class AuthController {
   @ApiBody({ type: LoginUserDto })
   @ApiOkResponse({ description: 'Logout successful' })
   @Post('logout')
-  getProfile(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
-    console.log('profile', req.user);
+  @HttpCode(200)
+  logout(@Res({ passthrough: true }) res: Response) {
+    this.authService.logout();
+    return res.json({ message: 'Logout successful' }).end();
+    // console.log('logout', req.user);
+    // return this.authService.logout();
     // res.cookie('access_token', '', {
     //   expires: new Date(0),
     //   httpOnly: true,
     // });
-    return req.user;
   }
 }

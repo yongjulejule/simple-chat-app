@@ -120,4 +120,12 @@ describe('UserModule (e2e)', () => {
       .expect(200)
       .expect({ affected: 1 });
   });
+
+  it('/auth/logout (POST)', () => {
+    return request(app.getHttpServer())
+      .post('/auth/logout')
+      .set('Authorization', `Bearer ${token}`)
+      .expect(200)
+      .expect({ message: 'Logout success' });
+  });
 });
