@@ -11,7 +11,12 @@ import {
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ValidationPipe } from './validation/validation.pipe';
-import { ApiTags, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiHeaders,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UnauthorizedFilter } from '../auth/filters/unauthorized.filter';
 
@@ -31,6 +36,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @UseFilters(UnauthorizedFilter)
   @ApiResponse({ status: 200, description: 'Success', type: CreateUserDto })
+  @ApiBearerAuth()
   findAll() {
     return this.userService.findAll();
   }
@@ -38,6 +44,7 @@ export class UserController {
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   @UseFilters(UnauthorizedFilter)
+  @ApiBearerAuth()
   findOne(@Param('id') id: string) {
     return this.userService.findOne(+id);
   }
@@ -45,6 +52,7 @@ export class UserController {
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
   @UseFilters(UnauthorizedFilter)
+  @ApiBearerAuth()
   remove(@Param('id') id: string) {
     return this.userService.remove(+id);
   }

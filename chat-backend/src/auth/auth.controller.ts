@@ -15,31 +15,32 @@ import {
   ApiBody,
   ApiCreatedResponse,
   ApiOkResponse,
+  ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { LoginUserDto } from './dto/login-user.dto';
-import { UnauthorizedFilter } from './filters/unauthorized.filter';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
+  @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ description: 'Login successful' })
   @ApiUnauthorizedResponse({ description: 'Login failed' })
   @ApiBody({ type: LoginUserDto })
-  @ApiBearerAuth('access_token')
   async login(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ) /* : Promise<LoginUserDto> */ {
     const { access_token } = await this.authService.login(req.user);
-    res.status(200).setHeader('Authorization', `Bearer ${access_token}`);
+    res.setHeader('Authorization', `Bearer ${access_token}`);
     // res.cookie('access_token', access_token, {
     //   sameSite: 'lax',
     //   httpOnly: true,
@@ -52,7 +53,7 @@ export class AuthController {
   @ApiBody({ type: LoginUserDto })
   @ApiOkResponse({ description: 'Logout successful' })
   @Post('logout')
-  @HttpCode(200)
+  @HttpCode(HttpStatus.OK)
   logout(@Res({ passthrough: true }) res: Response) {
     this.authService.logout();
     return res.json({ message: 'Logout successful' }).end();
