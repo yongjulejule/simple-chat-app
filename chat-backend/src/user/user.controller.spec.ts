@@ -25,7 +25,7 @@ const userDto = {
   password: 'password #1',
 };
 
-class mockDataSource {}
+class mockUserRepository {}
 describe('UserController', () => {
   let controller: UserController;
 
@@ -33,23 +33,11 @@ describe('UserController', () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UserController],
       providers: [
-        ValidationPipe,
-        Encrypter,
         UserService,
-        {
-          provide: getDataSourceToken(),
-          useClass: mockDataSource,
-        },
+        Encrypter,
         {
           provide: getRepositoryToken(User),
-          useValue: {
-            findAll: jest.fn().mockResolvedValue(userDtoArray),
-            findOneBy: jest.fn().mockResolvedValue(userDto),
-            findOne: jest.fn().mockResolvedValue(userDto),
-            find: jest.fn().mockResolvedValue(emailArray),
-            save: jest.fn().mockResolvedValue(userDto),
-            delete: jest.fn().mockResolvedValue({ affected: 1 }),
-          },
+          useClass: mockUserRepository,
         },
       ],
     }).compile();
@@ -60,11 +48,4 @@ describe('UserController', () => {
   it('should be defined', () => {
     expect(controller).toBeDefined();
   });
-
-  // describe('create() method', () => {
-  //   it('should return a user', async () => {
-  //     const user = await controller.create();
-  //     expect(user).toEqual(user);
-  //   });
-  // }
 });

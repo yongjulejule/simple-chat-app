@@ -10,24 +10,25 @@ import { SocketModule } from './socket/socket.module';
 import { PerformanceInterceptor } from './performance/performance.interceptor';
 // import { QueryRunnerFactory } from './querry-runner.factory';
 import { AuthModule } from './auth/auth.module';
+import { ConfigurationModule } from './config/configuration.module';
+import { ConfigurationService } from './config/configuration.service';
 
 @Module({
   imports: [
-    UserModule,
-    // TODO :  extract argument of TypeOrmModule.forRoot() to one object
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: process.env.DB_USERNAME,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
-      entities: [User],
-      synchronize: true,
+    ConfigModule.forRoot({
+      envFilePath: './config/.development.env',
+      isGlobal: true,
     }),
-    ConfigModule.forRoot({ envFilePath: './config/.development.env' }),
+    UserModule,
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigurationModule],
+      useFactory: (configService: ConfigurationService) =>
+        configService.postgresConfig,
+      inject: [ConfigurationService],
+    }),
     SocketModule,
     AuthModule,
+    ConfigModule,
   ],
   controllers: [AppController],
   providers: [

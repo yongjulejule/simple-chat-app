@@ -22,8 +22,6 @@ const userDto = {
   password: 'password #1',
 };
 
-class mockDataSource {}
-
 describe('UserService', () => {
   let service: UserService;
   let repository: Repository<User>;
@@ -32,10 +30,6 @@ describe('UserService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UserService,
-        {
-          provide: getDataSourceToken(),
-          useClass: mockDataSource,
-        },
         {
           provide: getRepositoryToken(User),
           useValue: {
