@@ -14,7 +14,6 @@ import { UseInterceptors } from '@nestjs/common';
 import { PerformanceInterceptor } from '../performance/performance.interceptor';
 
 @UseInterceptors(PerformanceInterceptor)
-@ApiTags('socket')
 @WebSocketGateway({ namespace: '/activity', cors: { origin: '*' } })
 export class SocketGateway {
   constructor(private readonly socketService: SocketService) {
@@ -24,12 +23,25 @@ export class SocketGateway {
   @WebSocketServer()
   server: Server;
 
-  @ApiOperation({ summary: 'Create a new socket' })
   handleConnection(client: any, ...args: any[]) {
     console.log('SocketGateway handleConnection');
     console.log('current Users: ', this.activeUsers);
-    this.server.emit('connected', 'connection');
+    console.log('client', client);
+    console.log('args', args);
+    this.server.emit('connected', 'connection ( check who connected )');
     // this.server.emit('user connected', 'user connected')
+  }
+
+  handleDisconnection(client: any, ...args: any[]) {
+    console.log('SocketGateway handleDisconnection');
+    console.log('current Users: ', this.activeUsers);
+    console.log('client', client);
+    console.log('args', args);
+    this.server.emit(
+      'disconnected',
+      'disconnection ( check who disconnected )',
+    );
+    // this.server.emit('user disconnected', 'user disconnected')
   }
 
   @SubscribeMessage('newConnection')

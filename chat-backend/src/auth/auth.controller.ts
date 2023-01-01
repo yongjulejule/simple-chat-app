@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   Header,
   HttpCode,
   HttpStatus,
@@ -42,10 +43,8 @@ export class AuthController {
     const { access_token } = await this.authService.login(req.user);
     res.setHeader('Authorization', `Bearer ${access_token}`);
     res.cookie('access_token', access_token, {
-      sameSite: 'lax',
       httpOnly: true,
     });
-    // return req.user;
     return;
   }
 
@@ -61,7 +60,13 @@ export class AuthController {
       httpOnly: true,
     });
     return res.json({ message: 'Logout success' }).end();
-    // console.log('logout', req.user);
-    // return this.authService.logout();
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiOkResponse({ description: 'verified' })
+  @Get('verification')
+  @HttpCode(HttpStatus.OK)
+  verify(@Res({ passthrough: true }) res: Response) {
+    return res.json({ message: 'verified' }).end();
   }
 }

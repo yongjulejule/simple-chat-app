@@ -1,40 +1,30 @@
-import {socket} from "./io";
-import {redirect} from "react-router-dom";
+import { socket } from "./io";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const handleSubmit = (event: any) => {
+  const nav = useNavigate();
+  const handleSubmit = async (event: any) => {
     event.preventDefault();
     const email = event.target.email.value;
     const password = event.target.password.value;
-    alert(email + " " + password);
 
-    fetch("http://localhost:4000/auth/login", {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({
-        email,
-        password,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.success) {
-          socket.emit("newConnection", email);
-          localStorage.setItem("user", JSON.stringify(data.user));
-          alert(data.message);
-          return redirect("/");
-        }
-        alert(data.message);
+    try {
+      const res = await fetch("http://localhost:4000/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ email: email, password: password }),
       });
+      if (res.status !== 200) {
+        throw new Error("Login failed");
+      }
+      socket.emit("newConnection", email);
+      nav("/");
+    } catch (error) {
+      alert(error);
+    }
   };
 
-  if (localStorage.getItem("user")) {
-    return (
-      <div>
-        <p>You are already logged in.</p>
-      </div>
-    );
-  }
   return (
     <form onSubmit={handleSubmit}>
       <label htmlFor="email">Email:</label>

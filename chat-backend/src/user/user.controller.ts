@@ -38,6 +38,7 @@ export class UserController {
   @ApiResponse({ status: 200, description: 'Success', type: CreateUserDto })
   @ApiBearerAuth()
   findAll() {
+    console.log('UserController findAll() called. (JWT Authenticated)');
     return this.userService.findAll();
   }
 

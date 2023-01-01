@@ -3,7 +3,7 @@ import { INestApplication } from '@nestjs/common';
 import { UserModule } from '../../src/user/user.module';
 import * as request from 'supertest';
 import { User } from '../../src/user/entities/user.entity';
-import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
+import { getRepositoryToken } from '@nestjs/typeorm';
 import { CreateUserDto } from '../../src/user/dto/create-user.dto';
 import { AuthModule } from '../../src/auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
@@ -17,10 +17,7 @@ const mockUserDtoArray: CreateUserDto[] = [
     email: 'email_1@example.com',
     password: 'password_1',
   },
-  {
-    email: 'email_2@example.com',
-    password: 'password_2',
-  },
+  { email: 'email_2@example.com', password: 'password_2' },
 ];
 
 const mockUserEmailArray = mockUserDtoArray.map((userDto) => userDto.email);
@@ -32,6 +29,7 @@ const mockUserDto: CreateUserDto = {
 
 describe('UserModule (e2e)', () => {
   let app: INestApplication;
+  let agent: request.SuperTest<request.Test>;
 
   // Mocking Database
   const mockUserRepository = getRepositoryToken(User);
@@ -43,6 +41,8 @@ describe('UserModule (e2e)', () => {
     save: jest.fn().mockResolvedValue(mockUserDto),
     delete: jest.fn().mockResolvedValue({ affected: 1 }),
   };
+
+  // mocking JwtStrategy
 
   const mockEncrypter = {
     hashPassword: jest.fn().mockResolvedValue('hashedPassword'),
@@ -76,6 +76,7 @@ describe('UserModule (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     await app.init();
+    agent = request.agent(app.getHttpServer());
   });
 
   afterAll(async () => {
@@ -83,51 +84,34 @@ describe('UserModule (e2e)', () => {
   });
 
   it('/api/user (POST)', async () => {
-    const req = await request(app.getHttpServer())
-      .post('/api/user')
-      .send(mockUserDto)
-      .expect(201);
+    await agent.post('/api/user').send(JSON.stringify(mockUserDto)).expect(201);
   });
 
   let token: string;
 
   it('/auth/login (POST)', async () => {
-    const res = await request(app.getHttpServer())
-      .post('/auth/login')
-      .send(mockUserDto)
-      .expect(200);
-    token = res.headers['authorization'].split(' ')[1];
+    await agent.post('/auth/login').send(mockUserDto).expect(200);
   });
 
   it('/api/user (GET)', async () => {
-    const res = await request(app.getHttpServer())
-      .get('/api/user')
-      .set('cookie', `access_token=${token}`)
-      .send();
-    // .cookies('access_token', token)
-    // .cookies('access_token', token)
-    // .set('Authorization', `Bearer ${token}`)
-    // .expect(200)
-    // .expect(mockUserEmailArray);
-    console.log(res);
+    agent.get('/api/user');
   });
-  it('/api/user/:id (GET)', () => {
-    return request(app.getHttpServer())
+  it('/api/user/:id (GET:id)', () => {
+    agent
       .get('/api/user/1')
       .set('Authorization', `Bearer ${token}`)
       .expect(200)
       .expect(mockUserDto);
   });
   it('/api/user/:id (DELETE)', () => {
-    return request(app.getHttpServer())
+    agent
       .delete('/api/user/1')
       .set('Authorization', `Bearer ${token}`)
       .expect(200)
       .expect({ affected: 1 });
   });
-
   it('/auth/logout (POST)', () => {
-    return request(app.getHttpServer())
+    agent
       .post('/auth/logout')
       .set('Authorization', `Bearer ${token}`)
       .expect(200)
