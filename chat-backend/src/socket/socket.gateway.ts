@@ -3,19 +3,29 @@ import {
   SubscribeMessage,
   MessageBody,
   WebSocketServer,
+  ConnectedSocket,
+  OnGatewayConnection,
 } from '@nestjs/websockets';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { SocketService } from './socket.service';
-import { CreateSocketDto } from './dto/create-socket.dto';
 import { UpdateSocketDto } from './dto/update-socket.dto';
 import { ActiveUser } from './socket.interface';
-import { Server } from 'socket.io';
-import { UseInterceptors } from '@nestjs/common';
+import { Server, Socket } from 'socket.io';
+import {
+  BadRequestException,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { PerformanceInterceptor } from '../performance/performance.interceptor';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @UseInterceptors(PerformanceInterceptor)
-@WebSocketGateway({ namespace: '/activity', cors: { origin: '*' } })
-export class SocketGateway {
+@WebSocketGateway({
+  // transport: ['websocket'],
+  namespace: '/activity',
+  cors: { origin: '*' },
+  // cookie: true,
+})
+export class SocketGateway implements OnGatewayConnection {
   constructor(private readonly socketService: SocketService) {
     this.activeUsers = [];
   }
@@ -23,30 +33,33 @@ export class SocketGateway {
   @WebSocketServer()
   server: Server;
 
-  handleConnection(client: any, ...args: any[]) {
-    console.log('SocketGateway handleConnection');
-    console.log('current Users: ', this.activeUsers);
-    console.log('client', client);
-    console.log('args', args);
+  handleConnection(@ConnectedSocket() client: Socket, ...args: any[]) {
+    console.log(
+      'handshake cookie in connection :',
+      client.handshake.headers.cookie,
+    );
+
     this.server.emit('connected', 'connection ( check who connected )');
     // this.server.emit('user connected', 'user connected')
   }
 
   handleDisconnection(client: any, ...args: any[]) {
-    console.log('SocketGateway handleDisconnection');
     console.log('current Users: ', this.activeUsers);
-    console.log('client', client);
-    console.log('args', args);
     this.server.emit(
       'disconnected',
       'disconnection ( check who disconnected )',
     );
-    // this.server.emit('user disconnected', 'user disconnected')
   }
 
   @SubscribeMessage('newConnection')
-  newConnection(@MessageBody() data: ActiveUser) {
-    console.log('SocketGateway newConnection', data);
+  newConnection(
+    @ConnectedSocket() client: any,
+    @MessageBody() data: ActiveUser,
+  ) {
+    if (data === undefined || data === null) {
+      throw new BadRequestException('data is undefined or null');
+    }
+    console.log(data);
     this.activeUsers.push(data);
     this.server.emit('clientHello', this.activeUsers);
     console.log(this.activeUsers);

@@ -1,14 +1,14 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { socket } from './io';
-import { nanoid } from 'nanoid';
-import { useFetch } from 'react-async';
+import React, { useEffect, useRef, useState, useContext } from "react";
+import { ActivitySocketContext } from "../context/socket.context";
+// import io from "socket.io-client";
+import { nanoid } from "nanoid";
 
 interface User {
   email: string;
 }
 
 interface UserBoxProps {
-  email: User['email'];
+  email: User["email"];
 }
 
 const UserBox = ({ email }: UserBoxProps) => {
@@ -17,38 +17,45 @@ const UserBox = ({ email }: UserBoxProps) => {
 
 const Activity = () => {
   const [activeUsers, setActiveUsers] = useState<User[]>([]);
-  const socketRef = useRef(socket);
+  const socket = useContext(ActivitySocketContext);
 
   useEffect(() => {
     const fetchVerify = async () => {
       try {
-        const res = await fetch('http://localhost:4000/auth/verification', {
-          method: 'GET',
-          credentials: 'include',
+        const res = await fetch("http://localhost:4000/auth/verification", {
+          method: "GET",
+          credentials: "include",
         });
-        socketRef.current.on('connected', (data: any) => {
-          const user: string | null = window.localStorage.getItem('user');
-          if (user) {
-            alert('user: ' + user);
-            socketRef.current.emit('newConnection', user);
-          }
+        if (res.status !== 200){
+          throw new Error("User not logged in");
+        }
+        socket.on("connected", (data: any) => {
+            socket.emit("newConnection", 'TODO: put email... from... where?');
         });
-        socketRef.current.on('clientHello', (data: any) => {
+        socket.on("clientHello", (data: any) => {
           const userData: User[] = data.map((item: string): User => {
             return { email: item };
           });
           setActiveUsers(userData);
         });
+        return () => {
+          socket.off("connected");
+          socket.off("clientHello");
+          socket.off("userConnected");
+          socket.off("newConnection");
+        };
       } catch (error) {
-        alert(error)
+        alert(error);
+        return <></>;
       }
     };
     fetchVerify();
-    return () => {
-      socket.off('connected');
-      socket.off('clientHello');
-      socket.off('userConnected');
-    };
+    return;
+    // return () => {
+    //   socket.off('connected');
+    //   socket.off('clientHello');
+    //   socket.off('userConnected');
+    // };
   }, []);
 
   return (

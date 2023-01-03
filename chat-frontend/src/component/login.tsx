@@ -1,13 +1,17 @@
-import { socket } from "./io";
+// import { socket } from "./io";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { ReturnStatement } from "typescript";
+import { ActivitySocketContext } from "../context/socket.context";
 
 const Login = () => {
   const nav = useNavigate();
-  const handleSubmit = async (event: any) => {
-    event.preventDefault();
-    const email = event.target.email.value;
-    const password = event.target.password.value;
+  const socket = useContext(ActivitySocketContext);
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [userData, setUserData] = useState<string>("");
 
+  const fetchData: () => Promise<void> = async (): Promise<void> => {
     try {
       const res = await fetch("http://localhost:4000/auth/login", {
         method: "POST",
@@ -18,7 +22,18 @@ const Login = () => {
       if (res.status !== 200) {
         throw new Error("Login failed");
       }
-      socket.emit("newConnection", email);
+
+      const data = await res.json();
+      setUserData(data.email);
+    } catch (error) {
+      throw new Error("Login failed");
+    }
+  };
+  const handleSubmit = async (event: any) => {
+    event.preventDefault();
+    try {
+      await fetchData();
+      socket.emit("newConnection", userData);
       nav("/");
     } catch (error) {
       alert(error);
@@ -26,15 +41,24 @@ const Login = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <label htmlFor="email">Email:</label>
-      <input type="email" id="email" />
-      <br />
-      <label htmlFor="password">Password:</label>
-      <input type="password" id="password" />
-      <br />
-      <button type="submit">Log in</button>
-    </form>
+    <>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <br />
+        <label htmlFor="password">Password:</label>
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <br />
+        <button type="submit">Log in</button>
+      </form>
+    </>
   );
 };
 

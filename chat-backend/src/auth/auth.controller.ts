@@ -1,8 +1,6 @@
 import {
-  Body,
   Controller,
   Get,
-  Header,
   HttpCode,
   HttpStatus,
   Post,
@@ -12,9 +10,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import {
-  ApiBearerAuth,
   ApiBody,
-  ApiCreatedResponse,
   ApiOkResponse,
   ApiTags,
   ApiUnauthorizedResponse,
@@ -22,8 +18,10 @@ import {
 import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { LoginUserDto } from './dto/login-user.dto';
+import { UnauthorizedFilter } from './filters/unauthorized.filter';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
+import { LoginPayload } from './auth.interface';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -39,13 +37,16 @@ export class AuthController {
   async login(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
-  ) /* : Promise<LoginUserDto> */ {
-    const { access_token } = await this.authService.login(req.user);
+  ): Promise<{ email: string }> {
+    const { access_token, email }: LoginPayload = await this.authService.login(
+      req.user,
+    );
     res.setHeader('Authorization', `Bearer ${access_token}`);
     res.cookie('access_token', access_token, {
+      maxAge: 1000 * 60 * 60 * 24 * 7 /* 7 days */,
       httpOnly: true,
     });
-    return;
+    return { email };
   }
 
   @UseGuards(JwtAuthGuard)
@@ -66,7 +67,9 @@ export class AuthController {
   @ApiOkResponse({ description: 'verified' })
   @Get('verification')
   @HttpCode(HttpStatus.OK)
-  verify(@Res({ passthrough: true }) res: Response) {
+  @UseFilters(UnauthorizedFilter)
+  verify(@Res({ passthrough: true }) res: any) {
+    console.log('verified', res?.user);
     return res.json({ message: 'verified' }).end();
   }
 }
