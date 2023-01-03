@@ -5,6 +5,7 @@ import Register from "./component/register";
 import { ActivitySocketProvider } from "./context/socket.context";
 
 const App = () => {
+
   return (
     <BrowserRouter>
       <ActivitySocketProvider>

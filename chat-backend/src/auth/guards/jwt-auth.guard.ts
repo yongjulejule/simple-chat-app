@@ -1,8 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
 @Injectable()
-export class JwtAuthGuard extends AuthGuard('jwt') {
+export class JwtAuthGuard extends AuthGuard('jwt') {}
+
+@Injectable()
+export class SocketJwtAuthGuard extends AuthGuard('jwt') {
   constructor() {
     super();
     console.log('JwtAuthGuard constructor called');
@@ -13,6 +16,11 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     console.log('err : ', err);
     console.log('user : ', user);
     console.log('info : ', info);
+
+    // You can throw an exception based on either "info" or "err" arguments
+    if (err || !user) {
+      throw err || new UnauthorizedException();
+    }
 
     return user;
   }

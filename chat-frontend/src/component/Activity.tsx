@@ -29,15 +29,18 @@ const Activity = () => {
         if (res.status !== 200){
           throw new Error("User not logged in");
         }
+        alert('verified')
         socket.on("connected", (data: any) => {
             socket.emit("newConnection", 'TODO: put email... from... where?');
+            return {message: "hello", data: "world"};
         });
-        socket.on("clientHello", (data: any) => {
-          const userData: User[] = data.map((item: string): User => {
-            return { email: item };
-          });
-          setActiveUsers(userData);
-        });
+        // socket.on("clientHello", (data: any) => {
+        //   const userData: User[] = data.map((item: string): User => {
+        //     return { email: item };
+        //   });
+        //   setActiveUsers(userData);
+        //   return {message: "hello", data: "world"};
+        // });
         return () => {
           socket.off("connected");
           socket.off("clientHello");

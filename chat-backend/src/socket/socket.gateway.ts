@@ -10,13 +10,8 @@ import { SocketService } from './socket.service';
 import { UpdateSocketDto } from './dto/update-socket.dto';
 import { ActiveUser } from './socket.interface';
 import { Server, Socket } from 'socket.io';
-import {
-  BadRequestException,
-  UseGuards,
-  UseInterceptors,
-} from '@nestjs/common';
+import { BadRequestException, UseInterceptors } from '@nestjs/common';
 import { PerformanceInterceptor } from '../performance/performance.interceptor';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @UseInterceptors(PerformanceInterceptor)
 @WebSocketGateway({
@@ -56,6 +51,10 @@ export class SocketGateway implements OnGatewayConnection {
     @ConnectedSocket() client: any,
     @MessageBody() data: ActiveUser,
   ) {
+    console.log(
+      'handshake cookie in newConnection :',
+      client.handshake.headers.cookie,
+    );
     if (data === undefined || data === null) {
       throw new BadRequestException('data is undefined or null');
     }
@@ -63,6 +62,11 @@ export class SocketGateway implements OnGatewayConnection {
     this.activeUsers.push(data);
     this.server.emit('clientHello', this.activeUsers);
     console.log(this.activeUsers);
+  }
+
+  @SubscribeMessage('hello')
+  clientHello(@MessageBody() data: any) {
+    console.log('SocketGateway clientHello', data);
   }
 
   // @SubscribeMessage('userConnected')
