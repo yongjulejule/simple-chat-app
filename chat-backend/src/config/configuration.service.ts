@@ -22,7 +22,7 @@ export class ConfigurationService {
   get authConfig() {
     return {
       secret: this.configService.get('JWT_SECRET'),
-      signOptions: { expiresIn: '10m' },
+      signOptions: { expiresIn: '24h' },
     };
   }
 }

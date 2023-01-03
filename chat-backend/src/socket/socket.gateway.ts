@@ -39,7 +39,7 @@ export class SocketGateway implements OnGatewayConnection {
   }
 
   handleDisconnection(client: any, ...args: any[]) {
-    console.log('current Users: ', this.activeUsers);
+    // console.log('current Users: ', this.activeUsers);
     this.server.emit(
       'disconnected',
       'disconnection ( check who disconnected )',

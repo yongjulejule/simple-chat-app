@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router";
+import { useNavigate } from 'react-router';
 
 const Register = () => {
   const nav = useNavigate();
@@ -8,15 +8,15 @@ const Register = () => {
     const password = event.target.password.value;
 
     try {
-      const res = await fetch("http://localhost:4000/api/user", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const res = await fetch('http://localhost:4000/api/user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
       if (res.status !== 201) {
-        throw new Error("Register failed");
+        throw new Error('Register failed');
       }
-      nav("/login");
+      nav('/login');
     } catch (error) {
       alert(error);
     }

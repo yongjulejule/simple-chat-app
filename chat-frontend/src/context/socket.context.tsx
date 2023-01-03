@@ -1,8 +1,8 @@
-import React, { createContext } from "react";
-import { io, Socket } from "socket.io-client";
+import React, { createContext } from 'react';
+import { io, Socket, Manager } from 'socket.io-client';
 
-const activitySocket = io("http://localhost:4000/activity");
-const ActivitySocketContext = createContext<Socket>(activitySocket);
+const activitySocket = new Manager('http://localhost:4000');
+const ActivitySocketContext = createContext<Manager>(activitySocket);
 
 const ActivitySocketProvider = ({ children }: any) => {
   return (
@@ -12,4 +12,4 @@ const ActivitySocketProvider = ({ children }: any) => {
   );
 };
 
-export { ActivitySocketContext, ActivitySocketProvider}
+export { ActivitySocketContext, ActivitySocketProvider };

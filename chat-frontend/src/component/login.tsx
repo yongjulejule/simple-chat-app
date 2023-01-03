@@ -1,39 +1,40 @@
 // import { socket } from "./io";
-import { useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
-import { ActivitySocketContext } from "../context/socket.context";
+import { useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ActivitySocketContext } from '../context/socket.context';
 
 const Login = () => {
   const nav = useNavigate();
-  const socket = useContext(ActivitySocketContext);
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [userData, setUserData] = useState<string>("");
+  const manager = useContext(ActivitySocketContext);
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [userData, setUserData] = useState<string>('');
 
   const fetchData: () => Promise<void> = async (): Promise<void> => {
     try {
-      const res = await fetch("http://localhost:4000/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
+      const res = await fetch('http://localhost:4000/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ email: email, password: password }),
       });
       if (res.status !== 200) {
-        throw new Error("Login failed");
+        throw new Error('Login failed');
       }
 
       const data = await res.json();
       setUserData(data.email);
     } catch (error) {
-      throw new Error("Login failed");
+      throw new Error('Login failed');
     }
   };
   const handleSubmit = async (event: any) => {
     event.preventDefault();
     try {
       await fetchData();
-      socket.emit("newConnection", userData);
-      nav("/");
+      const socket = manager.socket('/activity');
+      socket.emit('newConnection', userData);
+      nav('/');
     } catch (error) {
       alert(error);
     }

@@ -49,7 +49,7 @@ export class AuthController {
     return { email };
   }
 
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @ApiBody({ type: LoginUserDto })
   @ApiOkResponse({ description: 'Logout success' })
   @Post('logout')
@@ -68,8 +68,8 @@ export class AuthController {
   @Get('verification')
   @HttpCode(HttpStatus.OK)
   @UseFilters(UnauthorizedFilter)
-  verify(@Res({ passthrough: true }) res: any) {
-    console.log('verified', res?.user);
-    return res.json({ message: 'verified' }).end();
+  verify(@Req() req: any, @Res({ passthrough: true }) res: any) {
+    console.log('res.user: ', req.user);
+    return res.json(req.user).end();
   }
 }

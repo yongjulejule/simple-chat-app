@@ -18,7 +18,7 @@
     "react-dom": "^18.2.0",
     "react-router": "^6.6.1",
     "react-router-dom": "^6.6.1",
-    "react-scripts": "5.0.1",
+    "react-scripts": "^4.0.3",
     "socket.io": "^4.5.4",
     "socket.io-client": "^4.5.4",
     "typescript": "^4.9.4",
@@ -47,5 +47,10 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "eslint-config-prettier": "^8.6.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "prettier": "2.8.1"
   }
 }
