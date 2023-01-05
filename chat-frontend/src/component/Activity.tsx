@@ -1,7 +1,7 @@
 import { useEffect, useState, useContext } from 'react';
 import { ActivitySocketContext } from '../context/socket.context';
-// import io from "socket.io-client";
 import { nanoid } from 'nanoid';
+import { Manager, Socket } from 'socket.io-client';
 
 interface User {
   email: string;
@@ -17,9 +17,10 @@ const UserBox = ({ email }: UserBoxProps) => {
 
 const Activity = () => {
   const [activeUsers, setActiveUsers] = useState<User[]>([]);
-  const socket = useContext(ActivitySocketContext);
-
+  const manager = useContext<Manager>(ActivitySocketContext);
+  const socket: Socket = manager.socket('/activity');
   useEffect(() => {
+    console.log('useEffect called in Activity.tsx');
     const fetchVerify = async () => {
       try {
         const res = await fetch('http://localhost:4000/auth/verification', {
@@ -32,9 +33,11 @@ const Activity = () => {
         const data = await res.json();
         alert('verified');
         socket.on('connected', (d: any) => {
+          alert(data);
           socket.emit('newConnection', data);
         });
         socket.on('clientHello', (data: any) => {
+          alert('clinent hello');
           const userData: User[] = data.map((item: string): User => {
             return { email: item };
           });

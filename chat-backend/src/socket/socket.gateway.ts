@@ -17,34 +17,39 @@ import { PerformanceInterceptor } from '../performance/performance.interceptor';
 @WebSocketGateway({
   // transport: ['websocket'],
   namespace: '/activity',
-  cors: { origin: '*' },
+  cors: {
+    origin: 'http://localhost:3000',
+    // origin: 'http(s)://(localhost:3000|admin.socket.io)',
+    // origin: '*',
+  },
+  // credentials: true,
   // cookie: true,
 })
-export class SocketGateway implements OnGatewayConnection {
+export class SocketGateway /* implements OnGatewayConnection  */ {
   constructor(private readonly socketService: SocketService) {
     this.activeUsers = [];
   }
   private activeUsers: ActiveUser[];
   @WebSocketServer()
-  server: Server;
+  private server: Server;
 
-  handleConnection(@ConnectedSocket() client: Socket, ...args: any[]) {
-    console.log(
-      'handshake cookie in connection :',
-      client.handshake.headers.cookie,
-    );
+  // handleConnection(@ConnectedSocket() client: Socket, ...args: any[]) {
+  // console.log(
+  //   'handshake cookie in connection :',
+  //   client.handshake.headers.cookie,
+  // );
+  // this.server.emit('connected', 'connection ( check who connected )');
+  // this.server.emit('user connected', 'user connected')
+  // console.log('handleConnection end');
+  // }
 
-    this.server.emit('connected', 'connection ( check who connected )');
-    // this.server.emit('user connected', 'user connected')
-  }
-
-  handleDisconnection(client: any, ...args: any[]) {
-    // console.log('current Users: ', this.activeUsers);
-    this.server.emit(
-      'disconnected',
-      'disconnection ( check who disconnected )',
-    );
-  }
+  // handleDisconnection(@ConnectedSocket() client: any, ...args: any[]) {
+  //   // console.log('current Users: ', this.activeUsers);
+  //   this.server.emit(
+  //     'disconnected',
+  //     'disconnection ( check who disconnected )',
+  //   );
+  // }
 
   @SubscribeMessage('newConnection')
   newConnection(
@@ -53,20 +58,16 @@ export class SocketGateway implements OnGatewayConnection {
   ) {
     console.log(
       'handshake cookie in newConnection :',
-      client.handshake.headers.cookie,
+      // client.handshake.headers.cookie,
     );
     if (data === undefined || data === null) {
       throw new BadRequestException('data is undefined or null');
     }
     console.log(data);
     this.activeUsers.push(data);
-    this.server.emit('clientHello', this.activeUsers);
-    console.log(this.activeUsers);
-  }
-
-  @SubscribeMessage('hello')
-  clientHello(@MessageBody() data: any) {
-    console.log('SocketGateway clientHello', data);
+    // this.server.emit('clientHello', this.activeUsers);
+    this.server.emit('clientHello', 'clientHello');
+    // console.log(this.activeUsers);
   }
 
   // @SubscribeMessage('userConnected')
@@ -76,11 +77,6 @@ export class SocketGateway implements OnGatewayConnection {
   //   this.server.emit('clientHello', this.activeUsers);
   //   return this.socketService.create(createSocketDto);
   // }
-
-  @SubscribeMessage('ping')
-  ping(@MessageBody() data: any) {
-    console.log('SocketGateway ping', data);
-  }
 
   @SubscribeMessage('findAllSocket')
   findAll() {

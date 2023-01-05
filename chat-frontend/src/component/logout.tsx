@@ -4,7 +4,8 @@ import { ActivitySocketContext } from '../context/socket.context';
 
 export const Logout = () => {
   const nav = useNavigate();
-  const socket = useContext(ActivitySocketContext);
+  const manager = useContext(ActivitySocketContext);
+  const socket = manager.socket('/activity');
 
   const fetchData: () => Promise<void> = async (): Promise<void> => {
     try {

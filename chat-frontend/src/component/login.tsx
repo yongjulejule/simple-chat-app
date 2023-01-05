@@ -21,8 +21,8 @@ const Login = () => {
       if (res.status !== 200) {
         throw new Error('Login failed');
       }
-
       const data = await res.json();
+      document.cookie = `email=${data.email}; max-age=3600;`;
       setUserData(data.email);
     } catch (error) {
       throw new Error('Login failed');
@@ -32,6 +32,7 @@ const Login = () => {
     event.preventDefault();
     try {
       await fetchData();
+
       const socket = manager.socket('/activity');
       socket.emit('newConnection', userData);
       nav('/');

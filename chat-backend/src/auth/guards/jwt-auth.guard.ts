@@ -13,9 +13,9 @@ export class SocketJwtAuthGuard extends AuthGuard('jwt') {
 
   handleRequest(err, user, info) {
     console.log('JwtAuthGuard handleRequest called');
-    console.log('err : ', err);
-    console.log('user : ', user);
-    console.log('info : ', info);
+    // console.log('err : ', err);
+    // console.log('user : ', user);
+    // console.log('info : ', info);
 
     // You can throw an exception based on either "info" or "err" arguments
     if (err || !user) {

@@ -16,7 +16,6 @@ export class UnauthorizedFilter
       error: 'invalid_token',
       error_description: 'The access token is invalid or not given',
     };
-
     response.set(
       'WWW-Authenticate',
       `Bearer realm="simple chat app" error="${message.error}",` +

@@ -27,7 +27,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: jwtPayload): Promise<jwtResponse> {
-    console.log('jwt.strategy.ts: validate() payload: ', payload);
+    // console.log('jwt.strategy.ts: validate() payload: ', payload);
     // If you want to add more info to req.user object, you can do it here (e.g. access DB).
     return { userId: payload.sub, email: payload.email };
   }

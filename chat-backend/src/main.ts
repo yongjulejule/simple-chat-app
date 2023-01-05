@@ -8,6 +8,7 @@ async function bootstrap() {
   SetupSwagger(app);
   app.enableCors({
     origin: 'http://localhost:3000',
+    // origin: '*',
     credentials: true,
   });
   app.use(cookie());
