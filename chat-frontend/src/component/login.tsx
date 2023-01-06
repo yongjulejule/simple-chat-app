@@ -22,7 +22,7 @@ const Login = () => {
         throw new Error('Login failed');
       }
       const data = await res.json();
-      document.cookie = `email=${data.email}; max-age=3600;`;
+      // document.cookie = `email=${data.email}; max-age=3600;`;
       setUserData(data.email);
     } catch (error) {
       throw new Error('Login failed');

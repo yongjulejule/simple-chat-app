@@ -34,12 +34,8 @@ export class SocketGateway /* implements OnGatewayConnection  */ {
   private server: Server;
 
   handleConnection(@ConnectedSocket() client: Socket, ...args: any[]) {
-    console.log(
-      'handshake cookie in connection :',
-      client.handshake.headers.cookie,
-    );
-    this.server.emit('connected', 'connection ( check who connected )');
-    this.server.emit('user connected', 'user connected');
+    // this.server.emit('connected', 'connection ( check who connected )');
+    // this.server.emit('user connected', 'user connected');
     console.log('handleConnection end');
   }
 
@@ -66,7 +62,7 @@ export class SocketGateway /* implements OnGatewayConnection  */ {
     console.log(data);
     this.activeUsers.push(data);
     // this.server.emit('clientHello', this.activeUsers);
-    this.server.emit('clientHello', 'clientHello');
+    this.server.emit('clientHello', this.activeUsers);
     // console.log(this.activeUsers);
   }
 

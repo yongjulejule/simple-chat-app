@@ -2,6 +2,8 @@ import { useEffect, useState, useContext } from 'react';
 import { ActivitySocketContext } from '../context/socket.context';
 import { nanoid } from 'nanoid';
 import { Manager, Socket } from 'socket.io-client';
+import { getCookie } from '../lib/getCookie';
+import { useNavigate } from 'react-router';
 
 interface User {
   email: string;
@@ -19,6 +21,7 @@ const Activity = () => {
   const [activeUsers, setActiveUsers] = useState<User[]>([]);
   const manager = useContext<Manager>(ActivitySocketContext);
   const socket: Socket = manager.socket('/activity');
+  const nav = useNavigate();
   useEffect(() => {
     console.log('useEffect called in Activity.tsx');
     const fetchVerify = async () => {
@@ -31,26 +34,23 @@ const Activity = () => {
           throw new Error('User not logged in');
         }
         const data = await res.json();
-        alert('verified');
-        socket.on('connected', (d: any) => {
-          alert(data);
-          socket.emit('newConnection', data);
-        });
+        socket.emit('newConnection', data.email);
         socket.on('clientHello', (data: any) => {
-          alert('clinent hello');
+          // socket.auth = { email: data };
           const userData: User[] = data.map((item: string): User => {
             return { email: item };
           });
           setActiveUsers(userData);
         });
         return () => {
-          socket.off('connected');
-          socket.off('clientHello');
-          socket.off('userConnected');
-          socket.off('newConnection');
+          // socket.off('connected');
+          // socket.off('clientHello');
+          // socket.off('userConnected');
+          // socket.off('newConnection');
         };
       } catch (error) {
         alert(error);
+        nav('/login');
         return <></>;
       }
     };
