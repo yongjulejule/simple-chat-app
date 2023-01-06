@@ -33,15 +33,15 @@ export class SocketGateway /* implements OnGatewayConnection  */ {
   @WebSocketServer()
   private server: Server;
 
-  // handleConnection(@ConnectedSocket() client: Socket, ...args: any[]) {
-  // console.log(
-  //   'handshake cookie in connection :',
-  //   client.handshake.headers.cookie,
-  // );
-  // this.server.emit('connected', 'connection ( check who connected )');
-  // this.server.emit('user connected', 'user connected')
-  // console.log('handleConnection end');
-  // }
+  handleConnection(@ConnectedSocket() client: Socket, ...args: any[]) {
+    console.log(
+      'handshake cookie in connection :',
+      client.handshake.headers.cookie,
+    );
+    this.server.emit('connected', 'connection ( check who connected )');
+    this.server.emit('user connected', 'user connected');
+    console.log('handleConnection end');
+  }
 
   // handleDisconnection(@ConnectedSocket() client: any, ...args: any[]) {
   //   // console.log('current Users: ', this.activeUsers);

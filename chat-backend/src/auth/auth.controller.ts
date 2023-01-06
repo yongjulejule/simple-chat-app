@@ -68,9 +68,9 @@ export class AuthController {
   @Get('verification')
   @HttpCode(HttpStatus.OK)
   @UseFilters(UnauthorizedFilter)
-  verify(@Req() req: any, @Res({ passthrough: true }) res: any) {
+  verify(@Req() req: any) {
     console.log('varify success');
-    // console.log('res.user: ', req.user);
-    return res.json(req.user).end();
+    console.log('res.user: ', req.user);
+    return req.user;
   }
 }
