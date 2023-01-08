@@ -1,14 +1,11 @@
 // import { socket } from "./io";
-import { useState, useContext } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ActivitySocketContext } from '../context/socket.context';
 
 const Login = () => {
   const nav = useNavigate();
-  const manager = useContext(ActivitySocketContext);
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-  const [userData, setUserData] = useState<string>('');
 
   const fetchData: () => Promise<void> = async (): Promise<void> => {
     try {
@@ -21,9 +18,6 @@ const Login = () => {
       if (res.status !== 200) {
         throw new Error('Login failed');
       }
-      const data = await res.json();
-      // document.cookie = `email=${data.email}; max-age=3600;`;
-      setUserData(data.email);
     } catch (error) {
       throw new Error('Login failed');
     }
@@ -32,9 +26,6 @@ const Login = () => {
     event.preventDefault();
     try {
       await fetchData();
-
-      const socket = manager.socket('/activity');
-      socket.emit('newConnection', userData);
       nav('/');
     } catch (error) {
       alert(error);
@@ -44,6 +35,7 @@ const Login = () => {
   return (
     <>
       <form onSubmit={handleSubmit}>
+        <label htmlFor="email">Email:</label>
         <input
           type="email"
           value={email}

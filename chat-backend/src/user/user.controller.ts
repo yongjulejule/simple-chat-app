@@ -11,12 +11,7 @@ import {
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ValidationPipe } from './validation/validation.pipe';
-import {
-  ApiTags,
-  ApiResponse,
-  ApiBearerAuth,
-  ApiHeaders,
-} from '@nestjs/swagger';
+import { ApiTags, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UnauthorizedFilter } from '../auth/filters/unauthorized.filter';
 
@@ -28,7 +23,7 @@ export class UserController {
   // @UseInterceptors(LoggerInterceptor)
   @Post()
   async create(@Body(ValidationPipe) createUserDto: CreateUserDto) {
-    const res = await this.userService.create(createUserDto);
+    await this.userService.create(createUserDto);
     return 'user created';
   }
 

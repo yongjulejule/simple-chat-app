@@ -5,64 +5,58 @@ import {
   WebSocketServer,
   ConnectedSocket,
   OnGatewayConnection,
+  OnGatewayDisconnect,
+  OnGatewayInit,
 } from '@nestjs/websockets';
 import { SocketService } from './socket.service';
 import { UpdateSocketDto } from './dto/update-socket.dto';
 import { ActiveUser } from './socket.interface';
 import { Server, Socket } from 'socket.io';
-import { BadRequestException, UseInterceptors } from '@nestjs/common';
+import { UseInterceptors } from '@nestjs/common';
 import { PerformanceInterceptor } from '../performance/performance.interceptor';
+import { instrument } from '@socket.io/admin-ui';
 
 @UseInterceptors(PerformanceInterceptor)
 @WebSocketGateway({
-  // transport: ['websocket'],
   namespace: '/activity',
   cors: {
-    origin: 'http://localhost:3000',
-    // origin: 'http(s)://(localhost:3000|admin.socket.io)',
-    // origin: '*',
+    // origin: 'http://localhost:3000',
+    origin: '*',
   },
-  // credentials: true,
+  credentials: true,
   // cookie: true,
 })
-export class SocketGateway /* implements OnGatewayConnection  */ {
+export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(private readonly socketService: SocketService) {
-    this.activeUsers = [];
+    this.activeUsers = new Set<ActiveUser>();
   }
-  private activeUsers: ActiveUser[];
+  private activeUsers: Set<ActiveUser>;
   @WebSocketServer()
   private server: Server;
 
-  handleConnection(@ConnectedSocket() client: Socket, ...args: any[]) {
-    // this.server.emit('connected', 'connection ( check who connected )');
-    // this.server.emit('user connected', 'user connected');
-    console.log('handleConnection end');
+  handleConnection(@ConnectedSocket() client: Socket) {
+    console.log(
+      client.handshake.auth.email,
+      ' is enter!\ncurrent active user : ',
+      this.activeUsers,
+    );
   }
 
-  // handleDisconnection(@ConnectedSocket() client: any, ...args: any[]) {
-  //   // console.log('current Users: ', this.activeUsers);
-  //   this.server.emit(
-  //     'disconnected',
-  //     'disconnection ( check who disconnected )',
-  //   );
-  // }
+  handleDisconnect(@ConnectedSocket() client: Socket) {
+    // console.log('current Users: ', this.activeUsers);
+    console.log(client.handshake.auth.email + ' :  disconnected');
+    this.activeUsers.delete(client.handshake.auth.email);
+    client.handshake.auth.email = '';
+    console.log('current active user : ', this.activeUsers);
+  }
 
   @SubscribeMessage('newConnection')
-  newConnection(
-    @ConnectedSocket() client: any,
-    @MessageBody() data: ActiveUser,
-  ) {
-    console.log(
-      'handshake cookie in newConnection :',
-      // client.handshake.headers.cookie,
-    );
-    if (data === undefined || data === null) {
-      throw new BadRequestException('data is undefined or null');
-    }
-    console.log(data);
-    this.activeUsers.push(data);
+  newConnection(@ConnectedSocket() client: Socket) {
+    console.log(client.handshake.auth);
+    this.activeUsers.add(client.handshake.auth.email);
+    console.log('current Users: ', this.activeUsers);
     // this.server.emit('clientHello', this.activeUsers);
-    this.server.emit('clientHello', this.activeUsers);
+    this.server.emit('clientHello', Array.from(this.activeUsers));
     // console.log(this.activeUsers);
   }
 

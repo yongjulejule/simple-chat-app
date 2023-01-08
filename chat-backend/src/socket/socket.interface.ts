@@ -1,3 +1,3 @@
 export interface ActiveUser {
-	email: string;
+  email: string;
 }

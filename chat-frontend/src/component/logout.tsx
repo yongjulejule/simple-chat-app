@@ -5,7 +5,6 @@ import { ActivitySocketContext } from '../context/socket.context';
 export const Logout = () => {
   const nav = useNavigate();
   const manager = useContext(ActivitySocketContext);
-  const socket = manager.socket('/activity');
 
   const fetchData: () => Promise<void> = async (): Promise<void> => {
     try {
@@ -17,7 +16,11 @@ export const Logout = () => {
       if (res.status !== 200) {
         throw new Error('Logout failed');
       }
-      socket.disconnect();
+      alert('socket connected? ' + manager.socket('/activity').connected);
+      if (manager.socket('/activity').connected) {
+        const socket = manager.socket('/activity');
+        socket.disconnect();
+      }
       nav('/login');
     } catch (error) {
       alert(error);

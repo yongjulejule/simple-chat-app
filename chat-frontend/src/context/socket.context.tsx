@@ -1,7 +1,9 @@
 import React, { createContext } from 'react';
 import { io, Socket, Manager } from 'socket.io-client';
 
-const activitySocket = new Manager('http://localhost:4000');
+const activitySocket = new Manager('http://localhost:4000', {
+  autoConnect: false,
+});
 const ActivitySocketContext = createContext<Manager>(activitySocket);
 
 const ActivitySocketProvider = ({ children }: any) => {

@@ -7,9 +7,9 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   SetupSwagger(app);
   app.enableCors({
-    origin: 'http://localhost:3000',
-    // origin: '*',
-    credentials: true,
+    // origin: ['http://localhost:3000', 'https://admin.socket.io/'],
+    origin: '*',
+    // credentials: true,
   });
   app.use(cookie());
   await app.listen(4000);

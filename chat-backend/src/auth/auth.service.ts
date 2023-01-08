@@ -17,7 +17,6 @@ export class AuthService {
     user
       ? console.log('email : ', email, 'is exist')
       : console.log('email : ', email, 'is not exist');
-    console.log('pass : ', pass, 'user.password', user.password);
     if (user && (await this.encrypter.comparePassword(pass, user.password))) {
       const { id, email } = user;
       return { id, email };

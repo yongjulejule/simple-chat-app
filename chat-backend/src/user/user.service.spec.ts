@@ -22,6 +22,11 @@ const userDto = {
   password: 'password #1',
 };
 
+const newUserDto = {
+  email: 'new email',
+  password: 'new password',
+};
+
 describe('UserService', () => {
   let service: UserService;
   let repository: Repository<User>;
@@ -37,7 +42,7 @@ describe('UserService', () => {
             findOneBy: jest.fn().mockResolvedValue(userDto),
             findOne: jest.fn().mockResolvedValue(userDto),
             find: jest.fn().mockResolvedValue(emailArray),
-            save: jest.fn().mockResolvedValue(userDto),
+            save: jest.fn().mockResolvedValue(newUserDto),
             delete: jest.fn().mockResolvedValue({ affected: 1 }),
           },
         },
@@ -70,8 +75,10 @@ describe('UserService', () => {
 
   describe('create()', () => {
     it('should create a user', async () => {
-      const user = await service.create(userDto);
-      expect(user).toEqual(userDto);
+      jest.spyOn(service, 'findOneByEmail').mockResolvedValue(null);
+      const user = await service.create(newUserDto);
+      console.log(user);
+      expect(user).toEqual('user created : ' + newUserDto.email);
     });
   });
 

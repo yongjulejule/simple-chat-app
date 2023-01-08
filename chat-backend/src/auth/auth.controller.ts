@@ -5,9 +5,9 @@ import {
   HttpStatus,
   Post,
   Req,
-  Res,
   UseFilters,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import {
   ApiBody,
@@ -15,13 +15,15 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { Request, Response } from 'express';
+import { Request } from 'express';
 import { AuthService } from './auth.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import { UnauthorizedFilter } from './filters/unauthorized.filter';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { LoginPayload } from './auth.interface';
+import { LoginInterceptor } from './interceptors/login.interceptor';
+import { LogoutInterceptor } from './interceptors/logout.interceptor';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -34,33 +36,18 @@ export class AuthController {
   @ApiOkResponse({ description: 'Login successful' })
   @ApiUnauthorizedResponse({ description: 'Login failed' })
   @ApiBody({ type: LoginUserDto })
-  async login(
-    @Req() req: Request,
-    @Res({ passthrough: true }) res: Response,
-  ): Promise<{ email: string }> {
-    const { access_token, email }: LoginPayload = await this.authService.login(
-      req.user,
-    );
-    res.setHeader('Authorization', `Bearer ${access_token}`);
-    res.cookie('access_token', access_token, {
-      maxAge: 1000 * 60 * 60 * 24 * 7 /* 7 days */,
-      httpOnly: true,
-    });
-    return { email };
+  @UseInterceptors(LoginInterceptor)
+  async login(@Req() req: Request): Promise<LoginPayload> {
+    return await this.authService.login(req.user);
   }
 
-  // @UseGuards(JwtAuthGuard)
   @ApiBody({ type: LoginUserDto })
   @ApiOkResponse({ description: 'Logout success' })
   @Post('logout')
   @HttpCode(HttpStatus.OK)
-  logout(@Res({ passthrough: true }) res: Response) {
-    this.authService.logout();
-    res.cookie('access_token', '', {
-      expires: new Date(0),
-      httpOnly: true,
-    });
-    return res.json({ message: 'Logout success' }).end();
+  @UseInterceptors(LogoutInterceptor)
+  logout(): string {
+    return this.authService.logout();
   }
 
   @UseGuards(JwtAuthGuard)
@@ -68,8 +55,7 @@ export class AuthController {
   @Get('verification')
   @HttpCode(HttpStatus.OK)
   @UseFilters(UnauthorizedFilter)
-  verify(@Req() req: any) {
-    console.log('varify success');
+  verify(@Req() req: Request) {
     console.log('res.user: ', req.user);
     return req.user;
   }

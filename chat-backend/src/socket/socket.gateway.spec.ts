@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SocketGateway } from './socket.gateway';
 import { SocketService } from './socket.service';
 import * as Client from 'socket.io-client';
-import { ApiBadGatewayResponse } from '@nestjs/swagger';
 
 describe('SocketGateway', () => {
   let gateway: SocketGateway;
@@ -17,8 +16,8 @@ describe('SocketGateway', () => {
     }).compile();
 
     gateway = module.get<SocketGateway>(SocketGateway);
-    service = module.get<SocketService>(SocketService);
     connectionSpy = jest.spyOn(gateway, 'handleConnection');
+    service = module.get<SocketService>(SocketService);
     // clientSocketManager = new Client.Manager('http://localhost:4000/');
     // clientSocket = clientSocketManager.socket('/activity');
   });
@@ -29,9 +28,11 @@ describe('SocketGateway', () => {
   });
 
   it('client connect to server', () => {
-    const clientSocketManager = new Client.Manager('http://localhost:4000/');
-    const clientSocket = clientSocketManager.socket('/activity');
-    clientSocket.emit('connected');
+    const clientSocketManager = new Client.Manager('http://localhost:4000/', {
+      autoConnect: false,
+    });
+    const clientSocket = clientSocketManager.socket('/activity').connect();
+    clientSocket.emit('newConnection');
 
     // clientSocket.on('connect', () => {
     //   clientSocket.on('connected', (data) => {

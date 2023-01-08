@@ -14,7 +14,7 @@ const Register = () => {
         body: JSON.stringify({ email, password }),
       });
       if (res.status !== 201) {
-        throw new Error('Register failed');
+        throw new Error((await res.json()).message);
       }
       nav('/login');
     } catch (error) {
