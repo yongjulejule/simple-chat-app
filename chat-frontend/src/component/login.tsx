@@ -22,6 +22,7 @@ const Login = () => {
       throw new Error('Login failed');
     }
   };
+
   const handleSubmit = async (event: any) => {
     event.preventDefault();
     try {

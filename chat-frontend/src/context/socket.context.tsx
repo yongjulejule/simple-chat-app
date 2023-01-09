@@ -1,5 +1,5 @@
 import React, { createContext } from 'react';
-import { io, Socket, Manager } from 'socket.io-client';
+import { Manager } from 'socket.io-client';
 
 const activitySocket = new Manager('http://localhost:4000', {
   autoConnect: false,
