@@ -30,7 +30,6 @@ export class UserService {
 
   async findOne(id: number): Promise<User> {
     const ret = await this.userRepository.findOneBy({ id });
-    console.log(ret);
     return ret;
   }
 
@@ -42,7 +41,6 @@ export class UserService {
   async remove(id: number) {
     // const { affected } = await this.userRepository.delete(id);
     const ret = await this.userRepository.delete(id);
-    console.log(ret);
     return ret;
   }
 }

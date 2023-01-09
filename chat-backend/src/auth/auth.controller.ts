@@ -3,6 +3,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Logger,
   Post,
   Req,
   UseFilters,
@@ -28,6 +29,7 @@ import { LogoutInterceptor } from './interceptors/logout.interceptor';
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
+  private readonly logger = new Logger(AuthController.name);
   constructor(private authService: AuthService) {}
 
   @UseGuards(LocalAuthGuard)
@@ -56,7 +58,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @UseFilters(UnauthorizedFilter)
   verify(@Req() req: Request) {
-    console.log('res.user: ', req.user);
+    this.logger.log('res.user: ', req.user);
     return req.user;
   }
 }

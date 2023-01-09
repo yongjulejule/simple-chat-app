@@ -4,12 +4,14 @@ import { SetupSwagger } from './swagger';
 import * as cookie from 'cookie-parser';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    // logger: true,
+  });
   SetupSwagger(app);
   app.enableCors({
-    // origin: ['http://localhost:3000', 'https://admin.socket.io/'],
-    origin: '*',
-    // credentials: true,
+    origin: 'http://localhost:3000',
+    // origin: '*',
+    credentials: true,
   });
   app.use(cookie());
   await app.listen(4000);

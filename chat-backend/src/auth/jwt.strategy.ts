@@ -1,6 +1,6 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigurationService } from '../config/configuration.service';
 
 interface jwtPayload {
@@ -15,6 +15,7 @@ interface jwtResponse {
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
+  private readonly logger = new Logger(JwtStrategy.name);
   constructor(private readonly configService: ConfigurationService) {
     super({
       // jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -27,7 +28,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: jwtPayload): Promise<jwtResponse> {
-    // console.log('jwt.strategy.ts: validate() payload: ', payload);
+    this.logger.log('jwt.strategy.ts: validate() payload: ', payload);
     // If you want to add more info to req.user object, you can do it here (e.g. access DB).
     return { userId: payload.sub, email: payload.email };
   }

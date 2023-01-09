@@ -2,18 +2,20 @@ import {
   CallHandler,
   ExecutionContext,
   Injectable,
+  Logger,
   NestInterceptor,
 } from '@nestjs/common';
 import { Observable, tap } from 'rxjs';
 
 @Injectable()
 export class PerformanceInterceptor implements NestInterceptor {
+  private readonly logger = new Logger(PerformanceInterceptor.name);
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    console.log('before ... ');
+    this.logger.log('before ... ');
 
     const now = Date.now();
     return next
       .handle()
-      .pipe(tap(() => console.log(`after ... ${Date.now() - now}ms`)));
+      .pipe(tap(() => this.logger.log(`after ... ${Date.now() - now}ms`)));
   }
 }

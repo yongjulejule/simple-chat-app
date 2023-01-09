@@ -10,7 +10,6 @@ import { PerformanceInterceptor } from './performance/performance.interceptor';
 import { AuthModule } from './auth/auth.module';
 import { ConfigurationModule } from './config/configuration.module';
 import { ConfigurationService } from './config/configuration.service';
-import { MonitorModule } from './monitor/monitor.module';
 
 @Module({
   imports: [
@@ -28,7 +27,6 @@ import { MonitorModule } from './monitor/monitor.module';
     SocketModule,
     AuthModule,
     ConfigModule,
-    MonitorModule,
   ],
   controllers: [AppController],
   providers: [
