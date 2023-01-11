@@ -13,5 +13,8 @@ jobs:
       - uses: actions/setup-node@v3.6.0
         with:
           node-version: 18.13.0
-      - run: npm i
-      - run: npm run test
+      - name: start project
+        working-directory: ./backend
+        run: |
+          npm i
+          npm run test
