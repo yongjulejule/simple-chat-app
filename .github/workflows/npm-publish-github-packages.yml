@@ -1,0 +1,17 @@
+name: node test
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3.6.0
+        with:
+          node-version: 18.13.0
+      - run: npm i
+      - run: npm run test
