@@ -4,7 +4,13 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
 @Injectable()
 export class ConfigurationService {
-  constructor(private configService: ConfigService) {}
+  constructor(private configService: ConfigService) {
+    console.log(
+      '==========',
+      this.configService.get('NODE_ENV'),
+      '==============',
+    );
+  }
 
   get postgresConfig(): TypeOrmModuleOptions {
     return {

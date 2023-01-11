@@ -10,6 +10,8 @@ import { PerformanceInterceptor } from './performance/performance.interceptor';
 import { AuthModule } from './auth/auth.module';
 import { ConfigurationModule } from './config/configuration.module';
 import { ConfigurationService } from './config/configuration.service';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -27,6 +29,9 @@ import { ConfigurationService } from './config/configuration.service';
     SocketModule,
     AuthModule,
     ConfigModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'),
+    }),
   ],
   controllers: [AppController],
   providers: [

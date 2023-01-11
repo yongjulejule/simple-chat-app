@@ -19,6 +19,8 @@ export class LogoutInterceptor implements NestInterceptor {
         res.cookie('access_token', '', {
           maxAge: 0,
           httpOnly: true,
+          sameSite: 'none',
+          secure: true,
         });
       }),
     );

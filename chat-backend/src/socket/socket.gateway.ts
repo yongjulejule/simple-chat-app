@@ -17,12 +17,13 @@ import { PerformanceInterceptor } from '../performance/performance.interceptor';
 @UseInterceptors(PerformanceInterceptor)
 @WebSocketGateway({
   namespace: '/activity',
+
   cors: {
     origin: 'http://localhost:3000',
     // origin: '*',
   },
   credentials: true,
-  // cookie: true,
+  cookie: true,
 })
 export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private readonly logger = new Logger(SocketGateway.name);
@@ -34,11 +35,13 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private server: Server;
 
   handleConnection(@ConnectedSocket() client: Socket) {
-    this.logger.log(
-      client.handshake.auth.email,
-      ' is enter! current active user : ',
-      ...this.activeUsers,
-    );
+    // this.logger.log(client);
+    this.logger.log('handle connection cookie: ', client.handshake.headers);
+    // this.logger.log(
+    //   client.handshake.auth.email,
+    //   ' is enter! current active user : ',
+    //   ...this.activeUsers,
+    // );
   }
 
   handleDisconnect(@ConnectedSocket() client: Socket) {

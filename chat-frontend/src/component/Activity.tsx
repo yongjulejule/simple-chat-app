@@ -30,6 +30,7 @@ const Activity = () => {
         if (res.status !== 200) {
           throw new Error('User not logged in');
         }
+        alert('hi');
         const { email } = await res.json();
         const socket: Socket = manager
           .socket('/activity', { auth: { email } })
