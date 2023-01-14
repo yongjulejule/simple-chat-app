@@ -12,11 +12,13 @@ import { ConfigurationModule } from './config/configuration.module';
 import { ConfigurationService } from './config/configuration.service';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { QueueController } from './queue/queue.controller';
+import { QueueService } from './queue/queue.service';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: './config/.development.env',
+      envFilePath: '/../config/.development.env',
       isGlobal: true,
     }),
     UserModule,
@@ -33,13 +35,14 @@ import { join } from 'path';
       rootPath: join(__dirname, '..', 'public'),
     }),
   ],
-  controllers: [AppController],
+  controllers: [AppController, QueueController],
   providers: [
     AppService,
     {
       provide: APP_INTERCEPTOR,
       useClass: PerformanceInterceptor,
     },
+    QueueService,
   ],
 })
 export class AppModule {}

@@ -8,6 +8,7 @@ export class ConfigurationService {
     console.log(
       '==========',
       this.configService.get('NODE_ENV'),
+      this.configService.get('DB_HOST'),
       '==============',
     );
   }
@@ -27,7 +28,7 @@ export class ConfigurationService {
 
   get authConfig() {
     return {
-      secret: this.configService.get('JWT_SECRET'),
+      secret: this.configService.get('JWT_SECRET') || 'hi',
       signOptions: { expiresIn: '24h' },
     };
   }
