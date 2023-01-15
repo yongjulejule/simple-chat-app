@@ -5,6 +5,7 @@ import Register from './component/register';
 import { ActivitySocketProvider } from './context/socket.context';
 import { Logout } from './component/logout';
 import { Queue } from './component/queue';
+import { Chat } from './component/chat';
 
 const App = () => {
   return (
@@ -29,6 +30,7 @@ const App = () => {
                 </>
               }
             />
+            <Route path="/chat/:id" element={<Chat />} />
           </Routes>
         </main>
       </ActivitySocketProvider>

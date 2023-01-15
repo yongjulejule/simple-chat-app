@@ -45,7 +45,6 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   handleDisconnect(@ConnectedSocket() client: Socket) {
-    // this.logger.log('current Users: ', this.activeUsers);
     this.logger.log(client.handshake.auth.email + ' :  disconnected');
     this.activeUsers.delete(client.handshake.auth.email);
     client.handshake.auth.email = '';
@@ -59,14 +58,6 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.logger.log('current Users: ', ...this.activeUsers);
     this.server.emit('clientHello', Array.from(this.activeUsers));
   }
-
-  // @SubscribeMessage('userConnected')
-  // create(@MessageBody() createSocketDto: CreateSocketDto) {
-  //   this.logger.log('SocketGateway create, socket name: userConnected');
-  //   this.logger.log('clientHello', this.activeUsers);
-  //   this.server.emit('clientHello', this.activeUsers);
-  //   return this.socketService.create(createSocketDto);
-  // }
 
   @SubscribeMessage('findAllSocket')
   findAll() {

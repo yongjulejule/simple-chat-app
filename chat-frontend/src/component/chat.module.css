@@ -1,0 +1,38 @@
+.chat_main{
+    height: 80vh;
+    width: 80vh;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+.input_box{
+    height: 60px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content:space-around;
+    padding: 10px 10px;
+}
+
+.input_box_input {
+    width: 80%;
+    height: 90%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 0 10px;
+    outline: none;
+}
+
+.input_box_button{
+    width: calc(20% - 30px);
+    height: 90%;
+    border: none;
+    outline: none;
+    background-color: #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+}

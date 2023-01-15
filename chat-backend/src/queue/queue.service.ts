@@ -1,5 +1,5 @@
 import { Logger, Injectable } from '@nestjs/common';
-import { bufferCount, distinct, Subject } from 'rxjs';
+import { bufferCount, distinctUntilChanged, Subject } from 'rxjs';
 import { QueueGateway } from './queue.gateway';
 @Injectable()
 export class QueueService {
@@ -8,12 +8,13 @@ export class QueueService {
   private match: Subject<string[]> = new Subject<string[]>();
 
   constructor(private readonly queueGateway: QueueGateway) {
-    this.queue.pipe(distinct(), bufferCount(2)).subscribe((players) => {
-      this.logger.log(`Match found: ${players.join(', ')}`);
-      // this.match.next(players);
-      this.queueGateway.queueMatched(players);
-      // this.queue.complete();
-    });
+    this.queue
+      .pipe(distinctUntilChanged(), bufferCount(2))
+      .subscribe((players) => {
+        this.logger.log(`Match found: ${players.join(', ')}`);
+        // this.match.next(players);
+        this.queueGateway.queueMatched(players);
+      });
   }
 
   joinQueue(player: string) {
