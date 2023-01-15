@@ -14,6 +14,8 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { QueueController } from './queue/queue.controller';
 import { QueueService } from './queue/queue.service';
+import { QueueGateway } from './queue/queue.gateway';
+import { QueueModule } from './queue/queue.module';
 
 @Module({
   imports: [
@@ -34,6 +36,7 @@ import { QueueService } from './queue/queue.service';
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'),
     }),
+    QueueModule,
   ],
   controllers: [AppController, QueueController],
   providers: [
@@ -43,6 +46,7 @@ import { QueueService } from './queue/queue.service';
       useClass: PerformanceInterceptor,
     },
     QueueService,
+    QueueGateway,
   ],
 })
 export class AppModule {}

@@ -16,11 +16,24 @@ export const Logout = () => {
       if (res.status !== 200) {
         throw new Error('Logout failed');
       }
-      alert('socket connected? ' + manager.socket('/activity').connected);
-      if (manager.socket('/activity').connected) {
-        const socket = manager.socket('/activity');
-        socket.disconnect();
-      }
+      alert(
+        'socket connected to activity?' +
+          manager.socket('/activity').connected +
+          '\nsocket connected to queue?' +
+          manager.socket('/queue').connected,
+      );
+      manager.socket('/activity').connected &&
+        manager.socket('/activity').disconnect();
+      manager.socket('/queue').connected &&
+        manager.socket('/queue').disconnect();
+      // if (manager.socket('/activity').connected) {
+      //   const socket = manager.socket('/activity');
+      //   socket.disconnect();
+      // }
+      // if (manager.socket('/queue').connected) {
+      //   const socket = manager.socket('/queue');
+      //   socket.disconnect();
+      // }
       nav('/login');
     } catch (error) {
       alert(error);

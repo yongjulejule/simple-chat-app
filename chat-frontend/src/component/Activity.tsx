@@ -44,10 +44,9 @@ const Activity = () => {
           setActiveUsers(userData);
         });
         return () => {
-          // socket.off('connected');
-          // socket.off('clientHello');
-          // socket.off('userConnected');
-          // socket.off('newConnection');
+          socket.off('connected');
+          socket.off('clientHello');
+          socket.off('newConnection');
         };
       } catch (error) {
         alert(error);

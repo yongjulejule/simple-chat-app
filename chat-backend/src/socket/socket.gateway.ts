@@ -36,12 +36,12 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   handleConnection(@ConnectedSocket() client: Socket) {
     // this.logger.log(client);
-    this.logger.log('handle connection cookie: ', client.handshake.headers);
-    // this.logger.log(
-    //   client.handshake.auth.email,
-    //   ' is enter! current active user : ',
-    //   ...this.activeUsers,
-    // );
+    // this.logger.log('handle connection cookie: ', client.handshake.headers);
+    this.logger.log(
+      client.handshake.auth.email,
+      ' is enter! current active user : ',
+      ...this.activeUsers,
+    );
   }
 
   handleDisconnect(@ConnectedSocket() client: Socket) {

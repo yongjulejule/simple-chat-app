@@ -4,6 +4,7 @@ import Activity from './component/Activity';
 import Register from './component/register';
 import { ActivitySocketProvider } from './context/socket.context';
 import { Logout } from './component/logout';
+import { Queue } from './component/queue';
 
 const App = () => {
   return (
@@ -19,7 +20,15 @@ const App = () => {
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
             <Route path="/logout" element={<Logout />} />
-            <Route path="/" element={<Activity />} />
+            <Route
+              path="/"
+              element={
+                <>
+                  <Activity />
+                  <Queue />
+                </>
+              }
+            />
           </Routes>
         </main>
       </ActivitySocketProvider>
