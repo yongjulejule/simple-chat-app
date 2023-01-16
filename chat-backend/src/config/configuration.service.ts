@@ -21,7 +21,8 @@ export class ConfigurationService {
       username: this.configService.get('DB_USERNAME'),
       password: this.configService.get('DB_PASSWORD'),
       database: this.configService.get('DB_NAME'),
-      entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+      // entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+      autoLoadEntities: true,
       synchronize: true,
     };
   }
